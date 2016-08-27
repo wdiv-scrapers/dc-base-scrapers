@@ -23,3 +23,14 @@ def store_history(data, table):
         data=hash_record,
         table_name='history')
     scraperwiki.sqlite.commit_transactions()
+
+
+def truncate(table):
+    scraperwiki.sqlite.execute("DROP TABLE IF EXISTS %s;" % table)
+    scraperwiki.sqlite.commit_transactions()
+
+
+def summarise(table):
+    count = scraperwiki.sqlite.execute(
+        "SELECT COUNT(*) AS count FROM %s;" % table)
+    print("%i %s in database" % (count['data'][0].count, table))

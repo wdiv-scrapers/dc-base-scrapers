@@ -1,7 +1,6 @@
 import json
 import os
 import urllib.request
-from arcgis2geojson import arcgis2geojson
 from common import store_history, truncate, summarise
 
 # hack to override sqlite database filename
@@ -22,25 +21,21 @@ def scrape(url, council_id, encoding, table):
         data = json.loads(data_str.decode(encoding))
         print("found %i %s" % (len(data['features']), table))
 
-        # grab field names
-        fields = data['fields']
-
         for feature in data['features']:
-
-            # convert arcgis geometry to geojson
-            geometry = arcgis2geojson(feature)
 
             # assemble record
             record = {
+                'pk': feature['id'],
                 'council_id': council_id,
-                'geometry': json.dumps(geometry),
+                'geometry': json.dumps(feature),
             }
-            for field in fields:
-                record[field['name']] = feature['attributes'][field['name']]
+            for field in feature['properties']:
+                if field != 'bbox':
+                    record[field] = feature['properties'][field]
 
             # save to db
             scraperwiki.sqlite.save(
-                unique_keys=['OBJECTID'],
+                unique_keys=['pk'],
                 data=record,
                 table_name=table)
             scraperwiki.sqlite.commit_transactions()
