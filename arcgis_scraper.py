@@ -12,10 +12,10 @@ import scraperwiki
 
 def scrape(url, council_id, encoding, table):
 
-    # clear any existing data
-    truncate(table)
-
     with urllib.request.urlopen(url) as response:
+
+        # clear any existing data
+        truncate(table)
 
         # load json
         data_str = response.read()
