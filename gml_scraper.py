@@ -2,6 +2,8 @@ import os
 import urllib.request
 from copy import deepcopy
 from lxml import etree
+from retry import retry
+from urllib.error import HTTPError
 from common import store_history, truncate, summarise
 
 # hack to override sqlite database filename
@@ -19,6 +21,7 @@ def make_geometry(xmltree, element):
     return etree.tostring(geometry)
 
 
+@retry(HTTPError, tries=2, delay=30)
 def scrape(url, council_id, table, fields, pk):
 
     with urllib.request.urlopen(url) as response:

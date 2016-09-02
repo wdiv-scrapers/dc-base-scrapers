@@ -1,6 +1,8 @@
 import json
 import os
 import urllib.request
+from retry import retry
+from urllib.error import HTTPError
 from arcgis2geojson import arcgis2geojson
 from common import store_history, truncate, summarise
 
@@ -10,6 +12,7 @@ os.environ['SCRAPERWIKI_DATABASE_NAME'] = 'sqlite:///data.sqlite'
 import scraperwiki
 
 
+@retry(HTTPError, tries=2, delay=30)
 def scrape(url, council_id, encoding, table):
 
     with urllib.request.urlopen(url) as response:
