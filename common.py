@@ -16,7 +16,8 @@ def store_history(data, table):
     hash_record = {
         'timestamp': datetime.datetime.now(),
         'table': table,
-        'content_hash': hashlib.sha1(data).hexdigest()
+        'content_hash': hashlib.sha1(data).hexdigest(),
+        'raw_data': data,
     }
     scraperwiki.sqlite.save(
         unique_keys=['timestamp'],
