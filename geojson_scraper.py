@@ -12,7 +12,7 @@ import scraperwiki
 
 
 @retry(HTTPError, tries=2, delay=30)
-def scrape(url, council_id, encoding, table):
+def scrape(url, council_id, encoding, table, key=None):
 
     with urllib.request.urlopen(url) as response:
 
@@ -28,10 +28,13 @@ def scrape(url, council_id, encoding, table):
 
             # assemble record
             record = {
-                'pk': feature['id'],
                 'council_id': council_id,
                 'geometry': json.dumps(feature),
             }
+            if key is None:
+                record['pk'] = feature['id']
+            else:
+                record['pk'] = feature['properties'][key]
             for field in feature['properties']:
                 if field != 'bbox':
                     record[field] = feature['properties'][field]
