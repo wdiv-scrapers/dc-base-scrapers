@@ -12,7 +12,7 @@ os.environ['SCRAPERWIKI_DATABASE_NAME'] = 'sqlite:///data.sqlite'
 import scraperwiki
 
 
-def make_geometry(xmltree, element):
+def make_gml_geometry(xmltree, element):
     geometry = deepcopy(xmltree)
     for e in geometry:
         e.getparent().remove(e)
@@ -21,8 +21,19 @@ def make_geometry(xmltree, element):
     return etree.tostring(geometry)
 
 
+def make_wfs_geometry(xmltree, element):
+    geometry = deepcopy(xmltree)
+    for e in geometry:
+        e.getparent().remove(e)
+    geometry.append(deepcopy(element))
+    return etree.tostring(geometry)
+
+
 @retry(HTTPError, tries=2, delay=30)
-def scrape(url, council_id, table, fields, pk):
+def scrape(url, council_id, table, fields, pk, xml_format='gml'):
+
+    if not isinstance(pk, list):
+        pk = [pk]
 
     with urllib.request.urlopen(url) as response:
 
@@ -32,13 +43,26 @@ def scrape(url, council_id, table, fields, pk):
         # parse xml
         data_str = response.read()
         tree = etree.fromstring(data_str)
-        features = tree.findall('{http://www.opengis.net/gml}featureMember')
+
+        if xml_format == 'gml':
+            features = tree.findall('{http://www.opengis.net/gml}featureMember')
+        elif xml_format == 'wfs/2.0':
+            features = tree.findall('{http://www.opengis.net/wfs/2.0}member')
+        else:
+            raise ValueError("unexpected value for xml_format")
+
         print("found %i %s" % (len(features), table))
 
         for feature in features:
 
-            # create valid GML containing only this feature
-            geometry = make_geometry(tree, feature)
+            # create valid geometry containing only this feature
+            if xml_format == 'gml':
+                geometry = make_gml_geometry(tree, feature)
+            elif xml_format == 'wfs/2.0':
+                geometry = make_wfs_geometry(tree, feature)
+            else:
+                raise ValueError("unexpected value for xml_format")
+
             record = {
                 'geometry': geometry
             }
@@ -50,7 +74,7 @@ def scrape(url, council_id, table, fields, pk):
 
             # save to db
             scraperwiki.sqlite.save(
-                unique_keys=[pk],
+                unique_keys=pk,
                 data=record,
                 table_name=table)
             scraperwiki.sqlite.commit_transactions()
