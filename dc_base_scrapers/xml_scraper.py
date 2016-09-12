@@ -45,6 +45,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
             geometry = self.make_geometry(tree, feature)
 
             record = {
+                'council_id': self.council_id,
                 'geometry': geometry
             }
 
