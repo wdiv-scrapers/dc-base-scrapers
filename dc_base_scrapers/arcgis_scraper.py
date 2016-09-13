@@ -7,11 +7,12 @@ from dc_base_scrapers.common import (
 
 class ArcGisScraper(BaseScraper):
 
-    def __init__(self, url, council_id, encoding, table):
+    def __init__(self, url, council_id, encoding, table, store_raw_data=False):
         self.url = url
         self.council_id = council_id
         self.encoding = encoding
         self.table = table
+        self.store_raw_data = store_raw_data
         super().__init__()
 
     def scrape(self):

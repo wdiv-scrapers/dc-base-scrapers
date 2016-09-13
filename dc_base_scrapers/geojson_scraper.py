@@ -6,12 +6,13 @@ from dc_base_scrapers.common import (
 
 class GeoJsonScraper(BaseScraper):
 
-    def __init__(self, url, council_id, encoding, table, key=None):
+    def __init__(self, url, council_id, encoding, table, key=None, store_raw_data=False):
         self.url = url
         self.council_id = council_id
         self.encoding = encoding
         self.table = table
         self.key = key
+        self.store_raw_data = store_raw_data
         super().__init__()
 
     def scrape(self):

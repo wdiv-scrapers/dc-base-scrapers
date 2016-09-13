@@ -8,12 +8,13 @@ from dc_base_scrapers.common import (
 
 class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
 
-    def __init__(self, url, council_id, table, fields, pk):
+    def __init__(self, url, council_id, table, fields, pk, store_raw_data=False):
         self.url = url
         self.council_id = council_id
         self.table = table
         self.fields = fields
         self.pk = pk
+        self.store_raw_data = store_raw_data
         super().__init__()
 
     @abc.abstractmethod

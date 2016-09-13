@@ -27,6 +27,8 @@ def get_data_from_url(url):
 
 class BaseScraper(metaclass=abc.ABCMeta):
 
+    store_raw_data = False
+
     def __init__(self):
         if not hasattr(self, 'table'):
             raise NotImplementedError('Subclasses must define table')
@@ -44,8 +46,10 @@ class BaseScraper(metaclass=abc.ABCMeta):
             'timestamp': datetime.datetime.now(),
             'table': self.table,
             'content_hash': hashlib.sha1(data).hexdigest(),
-            'raw_data': data,
         }
+        if self.store_raw_data:
+            hash_record['raw_data'] = data
+
         scraperwiki.sqlite.save(
             unique_keys=['timestamp'],
             data=hash_record,
