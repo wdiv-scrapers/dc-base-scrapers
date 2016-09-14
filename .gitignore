@@ -1,2 +1,4 @@
 __pycache__/
 build/
+dc_base_scrapers.egg-info/
+dist/
