@@ -1,6 +1,5 @@
 import json
-import scraperwiki
-from dc_base_scrapers.common import get_data_from_url
+from dc_base_scrapers.common import get_data_from_url, save
 
 
 class CkanScraper:
@@ -40,11 +39,7 @@ class CkanScraper:
                 record[field] = resource[field]
 
             # save to db
-            scraperwiki.sqlite.save(
-                unique_keys=['dataset', 'revision_id', 'format'],
-                data=record,
-                table_name='resources')
-            scraperwiki.sqlite.commit_transactions()
+            save(['dataset', 'revision_id', 'format'], record, 'resources')
 
             if resource['format'] == self.return_format:
                 return_url = resource['url']

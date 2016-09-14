@@ -1,9 +1,13 @@
 import abc
-import scraperwiki
 from copy import deepcopy
 from lxml import etree
 from dc_base_scrapers.common import (
-    BaseScraper, truncate, summarise, get_data_from_url)
+    BaseScraper,
+    get_data_from_url,
+    save,
+    summarise,
+    truncate,
+)
 
 
 class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
@@ -42,12 +46,9 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
 
         for feature in features:
 
-            # create valid geometry containing only this feature
-            geometry = self.make_geometry(tree, feature)
-
             record = {
                 'council_id': self.council_id,
-                'geometry': geometry
+                'geometry': self.make_geometry(tree, feature),
             }
 
             # extract attributes and assemble record
@@ -56,11 +57,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
                     record[self.fields[attribute.tag]] = attribute.text
 
             # save to db
-            scraperwiki.sqlite.save(
-                unique_keys=self.pk,
-                data=record,
-                table_name=self.table)
-            scraperwiki.sqlite.commit_transactions()
+            save(self.pk, record, self.table)
 
         # print summary
         summarise(self.table)

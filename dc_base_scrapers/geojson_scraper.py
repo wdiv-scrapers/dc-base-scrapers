@@ -1,7 +1,11 @@
 import json
-import scraperwiki
 from dc_base_scrapers.common import (
-    BaseScraper, truncate, summarise, get_data_from_url)
+    BaseScraper,
+    get_data_from_url,
+    save,
+    summarise,
+    truncate,
+)
 
 
 class GeoJsonScraper(BaseScraper):
@@ -14,6 +18,9 @@ class GeoJsonScraper(BaseScraper):
         self.key = key
         self.store_raw_data = store_raw_data
         super().__init__()
+
+    def make_geometry(self, feature):
+        return json.dumps(feature)
 
     def scrape(self):
 
@@ -30,7 +37,7 @@ class GeoJsonScraper(BaseScraper):
             # assemble record
             record = {
                 'council_id': self.council_id,
-                'geometry': json.dumps(feature),
+                'geometry': self.make_geometry(feature),
             }
             if self.key is None:
                 record['pk'] = feature['id']
@@ -42,11 +49,7 @@ class GeoJsonScraper(BaseScraper):
                     record[field] = feature['properties'][field]
 
             # save to db
-            scraperwiki.sqlite.save(
-                unique_keys=['pk'],
-                data=record,
-                table_name=self.table)
-            scraperwiki.sqlite.commit_transactions()
+            save(['pk'], record, self.table)
 
         # print summary
         summarise(self.table)

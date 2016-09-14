@@ -18,6 +18,14 @@ def summarise(table):
     print("%i %s in database" % (count['data'][0].count, table))
 
 
+def save(unique_keys, data, table_name):
+    scraperwiki.sqlite.save(
+        unique_keys=unique_keys,
+        data=data,
+        table_name=table_name)
+    scraperwiki.sqlite.commit_transactions()
+
+
 @retry(HTTPError, tries=2, delay=30)
 def get_data_from_url(url):
     with urllib.request.urlopen(url) as response:
@@ -50,8 +58,4 @@ class BaseScraper(metaclass=abc.ABCMeta):
         if self.store_raw_data:
             hash_record['raw_data'] = data
 
-        scraperwiki.sqlite.save(
-            unique_keys=['timestamp'],
-            data=hash_record,
-            table_name='history')
-        scraperwiki.sqlite.commit_transactions()
+        save(['timestamp'], hash_record, 'history')
