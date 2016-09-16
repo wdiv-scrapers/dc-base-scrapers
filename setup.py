@@ -12,5 +12,5 @@ setup(
         'scraperwiki==0.5.1',
         'arcgis2geojson'
     ],
-    dependency_links=['git+https://github.com/chris48s/arcgis2geojson.git#egg=arcgis2geojson-0.0.0']
+    dependency_links=['git+https://github.com/chris48s/arcgis2geojson.git@master#egg=arcgis2geojson-0.0.0']
 )
