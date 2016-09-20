@@ -1,4 +1,7 @@
+import datetime
+import hashlib
 import json
+from collections import OrderedDict
 from dc_base_scrapers.common import (
     BaseScraper,
     get_data_from_url,
@@ -55,3 +58,31 @@ class GeoJsonScraper(BaseScraper):
         summarise(self.table)
 
         self.store_history(data_str)
+
+
+class RandomIdGeoJSONScraper(GeoJsonScraper):
+
+    def store_history(self, data_str):
+
+        """
+        Some WFS servers produce output with id fields that seem to be
+        randomly generated. Strip the ids out before we hash the json so that
+        we can detect when the actual data has changed and not just the ids.
+        """
+        data = json.loads(
+            data_str.decode(self.encoding),
+            object_pairs_hook=OrderedDict)
+
+        for i in range(0, len(data['features'])):
+            del data['features'][i]['id']
+        data_str = json.dumps(data).encode(self.encoding)
+
+        hash_record = {
+            'timestamp': datetime.datetime.now(),
+            'table': self.table,
+            'content_hash': hashlib.sha1(data_str).hexdigest(),
+        }
+        if self.store_raw_data:
+            hash_record['raw_data'] = data_str
+
+        save(['timestamp'], hash_record, 'history')
