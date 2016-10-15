@@ -43,7 +43,11 @@ class ArcGisScraper(BaseScraper):
                 'geometry': self.make_geometry(feature),
             }
             for field in fields:
-                record[field['name']] = feature['attributes'][field['name']]
+                value = feature['attributes'][field['name']]
+                if isinstance(value, str):
+                    record[field['name']] = value.strip()
+                else:
+                    record[field['name']] = value
 
             # save to db
             save(['OBJECTID'], record, self.table)

@@ -49,7 +49,11 @@ class GeoJsonScraper(BaseScraper):
 
             for field in feature['properties']:
                 if field != 'bbox':
-                    record[field] = feature['properties'][field]
+                    value = feature['properties'][field]
+                    if isinstance(value, str):
+                        record[field] = value.strip()
+                    else:
+                        record[field] = value
 
             # save to db
             save(['pk'], record, self.table)

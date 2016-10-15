@@ -54,7 +54,10 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
             # extract attributes and assemble record
             for attribute in feature[0]:
                 if attribute.tag in self.fields:
-                    record[self.fields[attribute.tag]] = attribute.text
+                    if isinstance(attribute.text, str):
+                        record[self.fields[attribute.tag]] = attribute.text.strip()
+                    else:
+                        record[self.fields[attribute.tag]] = attribute.text
 
             # save to db
             save(self.pk, record, self.table)
