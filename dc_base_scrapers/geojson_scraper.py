@@ -61,12 +61,12 @@ class GeoJsonScraper(BaseScraper):
         # print summary
         summarise(self.table)
 
-        self.store_history(data_str)
+        self.store_history(data_str, self.council_id)
 
 
 class RandomIdGeoJSONScraper(GeoJsonScraper):
 
-    def store_history(self, data_str):
+    def store_history(self, data_str, council_id):
 
         """
         Some WFS servers produce output with id fields that seem to be
@@ -82,6 +82,7 @@ class RandomIdGeoJSONScraper(GeoJsonScraper):
         data_str = json.dumps(data).encode(self.encoding)
 
         hash_record = {
+            'council_id': council_id,
             'timestamp': datetime.datetime.now(),
             'table': self.table,
             'content_hash': hashlib.sha1(data_str).hexdigest(),

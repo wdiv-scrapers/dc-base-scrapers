@@ -58,12 +58,12 @@ class ArcGisScraper(BaseScraper):
         # print summary
         summarise(self.table)
 
-        self.store_history(data_str)
+        self.store_history(data_str, self.council_id)
 
 
 class UnsortedArcGisScraper(ArcGisScraper):
 
-    def store_history(self, data_str):
+    def store_history(self, data_str, council_id):
 
         """
         Older versions of ArcGIS do not support orderByFields
@@ -78,6 +78,7 @@ class UnsortedArcGisScraper(ArcGisScraper):
         data_str = json.dumps(data).encode(self.encoding)
 
         hash_record = {
+            'council_id': council_id,
             'timestamp': datetime.datetime.now(),
             'table': self.table,
             'content_hash': hashlib.sha1(data_str).hexdigest(),

@@ -65,7 +65,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
         # print summary
         summarise(self.table)
 
-        self.store_history(data_str)
+        self.store_history(data_str, self.council_id)
 
 
 class GmlScraper(XmlScraper):

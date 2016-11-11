@@ -45,12 +45,13 @@ class BaseScraper(metaclass=abc.ABCMeta):
     def scrape(self):
         pass
 
-    def store_history(self, data):
+    def store_history(self, data, council_id):
         """
         store a hash of the content with a timestamp so we can work out
         when the content has changed from inside the scraper
         """
         hash_record = {
+            'council_id': council_id,
             'timestamp': datetime.datetime.now(),
             'table': self.table,
             'content_hash': hashlib.sha1(data).hexdigest(),
