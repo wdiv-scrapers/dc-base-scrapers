@@ -67,6 +67,13 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
 
         self.store_history(data_str, self.council_id)
 
+    def dump_fields(self):
+        data_str = get_data_from_url(self.url)
+        tree = etree.fromstring(data_str)
+        features = tree.findall(self.feature_tag)
+        for attribute in features[0][0]:
+            print(attribute.tag)
+
 
 class GmlScraper(XmlScraper):
 
