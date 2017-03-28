@@ -87,3 +87,32 @@ class UnsortedArcGisScraper(ArcGisScraper):
             hash_record['raw_data'] = data_str
 
         save(['timestamp'], hash_record, 'history')
+
+
+class RandomIdArcGisScraper(ArcGisScraper):
+
+    def store_history(self, data_str, council_id):
+
+        """
+        Sometimes we find an ArcGIS server where the OBJECTID field is for some
+        reason unstable. Strip the OBJECTID out before we hash the json so that
+        we can detect when the actual data has changed and not just the ids.
+        """
+        data = json.loads(
+            data_str.decode(self.encoding),
+            object_pairs_hook=OrderedDict)
+
+        for i in range(0, len(data['features'])):
+            del data['features'][i]['attributes']['OBJECTID']
+        data_str = json.dumps(data).encode(self.encoding)
+
+        hash_record = {
+            'council_id': council_id,
+            'timestamp': datetime.datetime.now(),
+            'table': self.table,
+            'content_hash': hashlib.sha1(data_str).hexdigest(),
+        }
+        if self.store_raw_data:
+            hash_record['raw_data'] = data_str
+
+        save(['timestamp'], hash_record, 'history')
