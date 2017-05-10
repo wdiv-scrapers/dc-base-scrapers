@@ -14,11 +14,12 @@ from dc_base_scrapers.common import (
 
 class ArcGisScraper(BaseScraper):
 
-    def __init__(self, url, council_id, encoding, table, store_raw_data=False):
+    def __init__(self, url, council_id, encoding, table, key='OBJECTID', store_raw_data=False):
         self.url = url
         self.council_id = council_id
         self.encoding = encoding
         self.table = table
+        self.key = key
         self.store_raw_data = store_raw_data
         super().__init__()
 
@@ -53,7 +54,7 @@ class ArcGisScraper(BaseScraper):
                     record[field['name']] = value
 
             # save to db
-            save(['OBJECTID'], record, self.table)
+            save([self.key], record, self.table)
 
         # print summary
         summarise(self.table)
@@ -74,7 +75,7 @@ class UnsortedArcGisScraper(ArcGisScraper):
             data_str.decode(self.encoding),
             object_pairs_hook=OrderedDict)
 
-        data = sorted(data['features'], key=lambda k: k['attributes']['OBJECTID'])
+        data = sorted(data['features'], key=lambda k: k['attributes'][self.key])
         data_str = json.dumps(data).encode(self.encoding)
 
         hash_record = {
@@ -94,8 +95,8 @@ class RandomIdArcGisScraper(ArcGisScraper):
     def store_history(self, data_str, council_id):
 
         """
-        Sometimes we find an ArcGIS server where the OBJECTID field is for some
-        reason unstable. Strip the OBJECTID out before we hash the json so that
+        Sometimes we find an ArcGIS server where the ID field is for some
+        reason unstable. Strip the ID out before we hash the json so that
         we can detect when the actual data has changed and not just the ids.
         """
         data = json.loads(
@@ -103,7 +104,7 @@ class RandomIdArcGisScraper(ArcGisScraper):
             object_pairs_hook=OrderedDict)
 
         for i in range(0, len(data['features'])):
-            del data['features'][i]['attributes']['OBJECTID']
+            del data['features'][i]['attributes'][self.key]
         data_str = json.dumps(data).encode(self.encoding)
 
         hash_record = {
