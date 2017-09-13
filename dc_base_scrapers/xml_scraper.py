@@ -6,6 +6,7 @@ from dc_base_scrapers.common import (
     get_data_from_url,
     save,
     summarise,
+    sync_to_github,
     truncate,
 )
 
@@ -62,6 +63,8 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
             # save to db
             save(self.pk, record, self.table)
 
+        sync_to_github(self.council_id, self.table, self.pk)
+
         # print summary
         summarise(self.table)
 
@@ -85,7 +88,7 @@ class GmlScraper(XmlScraper):
             e.getparent().remove(e)
         geometry.append(deepcopy(xmltree[0]))
         geometry.append(deepcopy(element))
-        return etree.tostring(geometry)
+        return etree.tostring(geometry, encoding="unicode")
 
 
 class Wfs2Scraper(XmlScraper):
@@ -97,4 +100,4 @@ class Wfs2Scraper(XmlScraper):
         for e in geometry:
             e.getparent().remove(e)
         geometry.append(deepcopy(element))
-        return etree.tostring(geometry)
+        return etree.tostring(geometry, encoding="unicode")

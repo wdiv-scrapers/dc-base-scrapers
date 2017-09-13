@@ -7,6 +7,7 @@ from dc_base_scrapers.common import (
     get_data_from_url,
     save,
     summarise,
+    sync_to_github,
     truncate,
 )
 
@@ -23,7 +24,7 @@ class GeoJsonScraper(BaseScraper):
         super().__init__()
 
     def make_geometry(self, feature):
-        return json.dumps(feature)
+        return json.dumps(feature, sort_keys=True)
 
     def scrape(self):
 
@@ -57,6 +58,11 @@ class GeoJsonScraper(BaseScraper):
 
             # save to db
             save(['pk'], record, self.table)
+
+        if self.key is None:
+            sync_to_github(self.council_id, self.table, 'id')
+        else:
+            sync_to_github(self.council_id, self.table, self.key)
 
         # print summary
         summarise(self.table)

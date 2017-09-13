@@ -8,6 +8,7 @@ from dc_base_scrapers.common import (
     get_data_from_url,
     save,
     summarise,
+    sync_to_github,
     truncate,
 )
 
@@ -24,7 +25,7 @@ class ArcGisScraper(BaseScraper):
         super().__init__()
 
     def make_geometry(self, feature):
-        return json.dumps(arcgis2geojson(feature))
+        return json.dumps(arcgis2geojson(feature), sort_keys=True)
 
     def scrape(self):
 
@@ -55,6 +56,8 @@ class ArcGisScraper(BaseScraper):
 
             # save to db
             save([self.key], record, self.table)
+
+        sync_to_github(self.council_id, self.table, self.key)
 
         # print summary
         summarise(self.table)
