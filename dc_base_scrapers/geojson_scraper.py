@@ -60,7 +60,7 @@ class GeoJsonScraper(BaseScraper):
             save(['pk'], record, self.table)
 
         if self.key is None:
-            sync_to_github(self.council_id, self.table, 'id')
+            sync_to_github(self.council_id, self.table, 'pk')
         else:
             sync_to_github(self.council_id, self.table, self.key)
 
