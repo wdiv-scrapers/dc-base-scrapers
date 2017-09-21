@@ -162,8 +162,11 @@ class GitHubClient:
                 payload = None
             else:
                 payload = self.get_payload(content, self.get_blob_sha(repo_content))
-        except requests.exceptions.HTTPError:
-            payload = self.get_payload(content)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                payload = self.get_payload(content)
+            else:
+                raise
 
         if payload:
             url = 'https://api.github.com/repos/%s/contents/%s' % (
