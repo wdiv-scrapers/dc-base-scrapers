@@ -26,11 +26,15 @@ class GeoJsonScraper(BaseScraper):
     def make_geometry(self, feature):
         return json.dumps(feature, sort_keys=True)
 
+    def get_data(self):
+        data_str = get_data_from_url(self.url)
+        data = json.loads(data_str.decode(self.encoding))
+        return (data_str, data)
+
     def scrape(self):
 
         # load json
-        data_str = get_data_from_url(self.url)
-        data = json.loads(data_str.decode(self.encoding))
+        data_str, data = self.get_data()
         print("found %i %s" % (len(data['features']), self.table))
 
         # clear any existing data
@@ -72,28 +76,38 @@ class GeoJsonScraper(BaseScraper):
 
 class RandomIdGeoJSONScraper(GeoJsonScraper):
 
-    def store_history(self, data_str, council_id):
+    def get_data(self):
 
         """
-        Some WFS servers produce output with id fields that seem to be
-        randomly generated. Strip the ids out before we hash the json so that
-        we can detect when the actual data has changed and not just the ids.
+        Some WFS servers produce output with id fields that seem to
+        be randomly generated. Strip the ids out so that we can
+        detect when the actual data has changed and not just the ids.
         """
+
+        data_str = get_data_from_url(self.url)
+
+        data = json.loads(
+            data_str.decode(self.encoding),
+            object_pairs_hook=OrderedDict)
+
+        for i in range(0, len(data['features'])):
+            data['features'][i]['id'] = i
+        data_str = json.dumps(data).encode(self.encoding)
+
+        return (data_str, data)
+
+    def store_history(self, data_str, council_id):
+
+        # slightly different for legacy compatibility
+
         data = json.loads(
             data_str.decode(self.encoding),
             object_pairs_hook=OrderedDict)
 
         for i in range(0, len(data['features'])):
             del data['features'][i]['id']
-        data_str = json.dumps(data).encode(self.encoding)
 
-        hash_record = {
-            'council_id': council_id,
-            'timestamp': datetime.datetime.now(),
-            'table': self.table,
-            'content_hash': hashlib.sha1(data_str).hexdigest(),
-        }
-        if self.store_raw_data:
-            hash_record['raw_data'] = data_str
-
-        save(['timestamp'], hash_record, 'history')
+        super().store_history(
+            json.dumps(data).encode(self.encoding),
+            council_id
+        )
