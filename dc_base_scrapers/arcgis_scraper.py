@@ -8,7 +8,7 @@ from dc_base_scrapers.common import (
     get_data_from_url,
     save,
     summarise,
-    sync_to_github,
+    sync_db_to_github,
     truncate,
 )
 
@@ -61,7 +61,7 @@ class ArcGisScraper(BaseScraper):
             # save to db
             save([self.key], record, self.table)
 
-        sync_to_github(self.council_id, self.table, self.key)
+        sync_db_to_github(self.council_id, self.table, self.key)
 
         # print summary
         summarise(self.table)

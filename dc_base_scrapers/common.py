@@ -53,17 +53,21 @@ def dump_table_to_json(table_name, key):
         sort_keys=True, indent=4)
 
 
-def sync_to_github(council_id, table_name, key):
+def sync_file_to_github(council_id, file_name, content):
     try:
         creds = get_github_credentials()
         g = GitHubClient(creds)
-        content = dump_table_to_json(table_name, key)
-        filename = "%s/%s.json" % (council_id, table_name)
-        g.put_file(content, filename)
+        path = "%s/%s.json" % (council_id, file_name)
+        g.put_file(content, path)
     except KeyError:
         # if no credentials are defined in env vars
         # just ignore this step
         pass
+
+
+def sync_db_to_github(council_id, table_name, key):
+    content = dump_table_to_json(table_name, key)
+    sync_file_to_github(council_id, table_name, content)
 
 
 @retry(HTTPError, tries=2, delay=30)

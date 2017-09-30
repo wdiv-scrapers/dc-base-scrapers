@@ -7,7 +7,7 @@ from dc_base_scrapers.common import (
     get_data_from_url,
     save,
     summarise,
-    sync_to_github,
+    sync_db_to_github,
     truncate,
 )
 
@@ -64,9 +64,9 @@ class GeoJsonScraper(BaseScraper):
             save(['pk'], record, self.table)
 
         if self.key is None:
-            sync_to_github(self.council_id, self.table, 'pk')
+            sync_db_to_github(self.council_id, self.table, 'pk')
         else:
-            sync_to_github(self.council_id, self.table, self.key)
+            sync_db_to_github(self.council_id, self.table, self.key)
 
         # print summary
         summarise(self.table)
