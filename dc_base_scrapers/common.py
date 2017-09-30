@@ -77,6 +77,12 @@ def get_data_from_url(url):
         return data
 
 
+def force_bytes(data, encoding='utf-8'):
+    if isinstance(data, (bytes, bytearray)):
+        return data
+    return bytes(data, encoding)
+
+
 class BaseScraper(metaclass=abc.ABCMeta):
 
     store_raw_data = False
@@ -128,7 +134,7 @@ class GitHubClient:
         # https://developer.github.com/v3/repos/contents/#create-a-file
         payload = {
             'message': 'Update data %s' % (str(datetime.datetime.now())),
-            'content': base64.b64encode(bytes(content, 'utf-8')).decode('utf-8'),
+            'content': base64.b64encode(force_bytes(content)).decode('utf-8'),
             'branch': 'master',
             "committer": {
                 "name": self.credentials.name,
@@ -153,8 +159,8 @@ class GitHubClient:
         # (this is not the same as the commit SHA)
         # https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git/552725#552725
         s = sha1()
-        s.update(("blob %u\0" % len(data)).encode('utf-8'))
-        s.update(bytes(data, 'utf-8'))
+        s.update(("blob %u\0" % len(force_bytes(data))).encode('utf-8'))
+        s.update(force_bytes(data))
         return s.hexdigest()
 
     def put_file(self, content, filename):
