@@ -1,11 +1,24 @@
 import json
-from dc_base_scrapers.common import get_data_from_url, save
+from collections import OrderedDict
+from dc_base_scrapers.common import (
+    get_data_from_url,
+    save,
+    sync_file_to_github
+)
+
+
+def format_json(json_str):
+    return json.dumps(
+        json.loads(json_str, object_pairs_hook=OrderedDict),
+        sort_keys=True, indent=4
+    )
 
 
 class CkanScraper:
 
-    def __init__(self, base_url, dataset, return_format, extra_fields, encoding):
+    def __init__(self, base_url, council_id, dataset, return_format, extra_fields, encoding):
         self.url = None
+        self.council_id = council_id
         self.base_url = base_url
         self.dataset = dataset
         self.return_format = return_format
@@ -43,5 +56,11 @@ class CkanScraper:
 
             if resource['format'] == self.return_format:
                 return_url = resource['url']
+
+        sync_file_to_github(
+            self.council_id,
+            self.dataset,
+            format_json(data_str.decode(self.encoding))
+        )
 
         return return_url
