@@ -152,7 +152,7 @@ class GitHubClient:
             self.credentials.repo, filename)
         r = requests.get(url)
         r.raise_for_status()
-        return r.text
+        return r.content
 
     def get_blob_sha(self, data):
         # work out the git SHA of a blob
@@ -168,7 +168,7 @@ class GitHubClient:
             repo_content = self.get_file(filename)
             # check if we need to do a commit because the
             # /contents will allow us to make an empty commit
-            if content == repo_content:
+            if force_bytes(content) == repo_content:
                 payload = None
             else:
                 payload = self.get_payload(content, self.get_blob_sha(repo_content))
