@@ -57,7 +57,12 @@ def sync_file_to_github(council_id, file_name, content):
     try:
         creds = get_github_credentials()
         g = GitHubClient(creds)
-        path = "%s/%s.json" % (council_id, file_name)
+        path = "%s/%s" % (council_id, file_name)
+
+        # if we haven't specified an extension, assume .json
+        if '.' not in path:
+            path = "%s.json" % (path)
+
         g.put_file(content, path)
     except KeyError:
         # if no credentials are defined in env vars
