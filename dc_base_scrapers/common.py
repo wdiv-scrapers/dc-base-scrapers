@@ -65,7 +65,7 @@ def sync_file_to_github(council_id, file_name, content):
         if '.' not in path:
             path = "%s.json" % (path)
 
-        g.put_file(content, path)
+        g.push_file(content, path)
     except KeyError:
         # if no credentials are defined in env vars
         # just ignore this step
@@ -175,7 +175,7 @@ class GitHubClient:
         s.update(force_bytes(data, encoding))
         return s.hexdigest()
 
-    def put_file(self, content, filename, encoding='utf-8'):
+    def push_file(self, content, filename, encoding='utf-8'):
         try:
             repo_content = self._get_file(filename)
             # check if we need to do a commit because the /contents
