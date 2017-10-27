@@ -136,13 +136,14 @@ class GitHubClient:
             raise TypeError('expected GitHubCredentials object')
         self.credentials = credentials
 
-    def _get_payload(self, content, parent_sha=None):
+    def _get_payload(self, content, parent_sha=None, encoding='utf-8'):
         # assemble a payload we can use to make a request
         # to the /contents endpoint in the GitHub API
         # https://developer.github.com/v3/repos/contents/#create-a-file
         payload = {
             'message': 'Update data %s' % (str(datetime.datetime.now())),
-            'content': base64.b64encode(force_bytes(content)).decode('utf-8'),
+            'content': base64.b64encode(
+                force_bytes(content, encoding)).decode('utf-8'),
             'branch': self.credentials.branch,
             "committer": {
                 "name": self.credentials.name,
@@ -165,27 +166,31 @@ class GitHubClient:
         r.raise_for_status()
         return r.content
 
-    def _get_blob_sha(self, data):
+    def _get_blob_sha(self, data, encoding='utf-8'):
         # work out the git SHA of a blob
         # (this is not the same as the commit SHA)
         # https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git/552725#552725
         s = sha1()
-        s.update(("blob %u\0" % len(force_bytes(data))).encode('utf-8'))
-        s.update(force_bytes(data))
+        s.update(("blob %u\0" % len(force_bytes(data, encoding))).encode('utf-8'))
+        s.update(force_bytes(data, encoding))
         return s.hexdigest()
 
-    def put_file(self, content, filename):
+    def put_file(self, content, filename, encoding='utf-8'):
         try:
             repo_content = self._get_file(filename)
             # check if we need to do a commit because the /contents
             # endpoint will allow us to make an empty commit
-            if force_bytes(content) == repo_content:
+            if force_bytes(content, encoding) == repo_content:
                 payload = None
             else:
-                payload = self._get_payload(content, self._get_blob_sha(repo_content))
+                payload = self._get_payload(
+                    content,
+                    parent_sha=self._get_blob_sha(repo_content, encoding=encoding),
+                    encoding=encoding
+                )
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
-                payload = self._get_payload(content)
+                payload = self._get_payload(content, encoding=encoding)
             else:
                 raise
 
