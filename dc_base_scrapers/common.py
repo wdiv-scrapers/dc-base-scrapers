@@ -130,7 +130,7 @@ class GitHubClient:
 
     def __init__(self, credentials):
         if not isinstance(credentials, GitHubCredentials):
-            raise TypeError('expected GitCredentials object')
+            raise TypeError('expected GitHubCredentials object')
         self.credentials = credentials
 
     def get_payload(self, content, parent_sha=None):
@@ -171,8 +171,8 @@ class GitHubClient:
     def put_file(self, content, filename):
         try:
             repo_content = self.get_file(filename)
-            # check if we need to do a commit because the
-            # /contents will allow us to make an empty commit
+            # check if we need to do a commit because the /contents
+            # endpoint will allow us to make an empty commit
             if force_bytes(content) == repo_content:
                 payload = None
             else:
