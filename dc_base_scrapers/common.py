@@ -35,6 +35,7 @@ def save(unique_keys, data, table_name):
 def get_github_credentials():
     return GitHubCredentials(
         repo=os.environ['MORPH_GITHUB_REPO'],
+        branch='master',
         name=os.environ['MORPH_GITHUB_USERNAME'],
         email=os.environ['MORPH_GITHUB_EMAIL'],
         api_key=os.environ['MORPH_GITHUB_API_KEY']
@@ -119,8 +120,9 @@ class BaseScraper(metaclass=abc.ABCMeta):
 
 class GitHubCredentials:
 
-    def __init__(self, repo, name, email, api_key):
+    def __init__(self, repo, branch, name, email, api_key):
         self.repo = repo
+        self.branch = branch
         self.name = name
         self.email = email
         self.api_key = api_key
@@ -140,7 +142,7 @@ class GitHubClient:
         payload = {
             'message': 'Update data %s' % (str(datetime.datetime.now())),
             'content': base64.b64encode(force_bytes(content)).decode('utf-8'),
-            'branch': 'master',
+            'branch': self.credentials.branch,
             "committer": {
                 "name": self.credentials.name,
                 "email": self.credentials.email
@@ -153,8 +155,8 @@ class GitHubClient:
         return json.dumps(payload)
 
     def get_file(self, filename):
-        url = 'https://raw.githubusercontent.com/%s/master/%s' % (
-            self.credentials.repo, filename)
+        url = 'https://raw.githubusercontent.com/%s/%s/%s' % (
+            self.credentials.repo, self.credentials.branch, filename)
         r = requests.get(url)
         r.raise_for_status()
         return r.content
