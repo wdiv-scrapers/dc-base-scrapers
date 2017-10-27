@@ -136,7 +136,7 @@ class GitHubClient:
             raise TypeError('expected GitHubCredentials object')
         self.credentials = credentials
 
-    def get_payload(self, content, parent_sha=None):
+    def _get_payload(self, content, parent_sha=None):
         # assemble a payload we can use to make a request
         # to the /contents endpoint in the GitHub API
         # https://developer.github.com/v3/repos/contents/#create-a-file
@@ -155,7 +155,7 @@ class GitHubClient:
             payload['sha'] = parent_sha
         return json.dumps(payload)
 
-    def get_file(self, filename):
+    def _get_file(self, filename):
         url = 'https://raw.githubusercontent.com/%s/%s/%s' % (
             urllib.parse.quote(self.credentials.repo),
             urllib.parse.quote(self.credentials.branch),
@@ -165,7 +165,7 @@ class GitHubClient:
         r.raise_for_status()
         return r.content
 
-    def get_blob_sha(self, data):
+    def _get_blob_sha(self, data):
         # work out the git SHA of a blob
         # (this is not the same as the commit SHA)
         # https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git/552725#552725
@@ -176,16 +176,16 @@ class GitHubClient:
 
     def put_file(self, content, filename):
         try:
-            repo_content = self.get_file(filename)
+            repo_content = self._get_file(filename)
             # check if we need to do a commit because the /contents
             # endpoint will allow us to make an empty commit
             if force_bytes(content) == repo_content:
                 payload = None
             else:
-                payload = self.get_payload(content, self.get_blob_sha(repo_content))
+                payload = self._get_payload(content, self._get_blob_sha(repo_content))
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
-                payload = self.get_payload(content)
+                payload = self._get_payload(content)
             else:
                 raise
 
