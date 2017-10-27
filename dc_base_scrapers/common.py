@@ -6,6 +6,7 @@ import json
 import os
 import requests
 import scraperwiki
+import urllib.parse
 import urllib.request
 from collections import OrderedDict
 from hashlib import sha1
@@ -156,7 +157,10 @@ class GitHubClient:
 
     def get_file(self, filename):
         url = 'https://raw.githubusercontent.com/%s/%s/%s' % (
-            self.credentials.repo, self.credentials.branch, filename)
+            urllib.parse.quote(self.credentials.repo),
+            urllib.parse.quote(self.credentials.branch),
+            urllib.parse.quote(filename)
+        )
         r = requests.get(url)
         r.raise_for_status()
         return r.content
@@ -187,7 +191,9 @@ class GitHubClient:
 
         if payload:
             url = 'https://api.github.com/repos/%s/contents/%s' % (
-                self.credentials.repo, filename)
+                urllib.parse.quote(self.credentials.repo),
+                urllib.parse.quote(filename)
+            )
             r = requests.put(url,
                 data=payload,
                 headers={'Authorization': 'token %s' % (self.credentials.api_key)}
