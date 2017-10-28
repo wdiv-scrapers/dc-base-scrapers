@@ -64,7 +64,8 @@ def sync_file_to_github(council_id, file_name, content):
         if '.' not in path:
             path = "%s.json" % (path)
 
-        g.push_file(content, path)
+        g.push_file(content, path, 'Update %s at %s' %\
+            (path, str(datetime.datetime.now())))
     except KeyError:
         # if no credentials are defined in env vars
         # just ignore this step
@@ -135,12 +136,12 @@ class GitHubClient:
             raise TypeError('expected GitHubCredentials object')
         self.credentials = credentials
 
-    def _get_payload(self, content, parent_sha=None, encoding='utf-8'):
+    def _get_payload(self, content, message, parent_sha=None, encoding='utf-8'):
         # assemble a payload we can use to make a request
         # to the /contents endpoint in the GitHub API
         # https://developer.github.com/v3/repos/contents/#create-a-file
         payload = {
-            'message': 'Update data %s' % (str(datetime.datetime.now())),
+            'message': message,
             'content': base64.b64encode(
                 force_bytes(content, encoding)).decode('utf-8'),
             'branch': self.credentials.branch,
@@ -174,7 +175,7 @@ class GitHubClient:
         s.update(force_bytes(data, encoding))
         return s.hexdigest()
 
-    def push_file(self, content, filename, encoding='utf-8'):
+    def push_file(self, content, filename, message, encoding='utf-8'):
         try:
             repo_content = self._get_file(filename)
             # check if we need to do a commit because the /contents
@@ -184,12 +185,13 @@ class GitHubClient:
             else:
                 payload = self._get_payload(
                     content,
+                    message,
                     parent_sha=self._get_blob_sha(repo_content, encoding=encoding),
                     encoding=encoding
                 )
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
-                payload = self._get_payload(content, encoding=encoding)
+                payload = self._get_payload(content, message, encoding=encoding)
             else:
                 raise
 
