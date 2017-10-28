@@ -1,7 +1,6 @@
 import abc
 import base64
 import datetime
-import hashlib
 import json
 import os
 import requests
@@ -111,7 +110,7 @@ class BaseScraper(metaclass=abc.ABCMeta):
             'council_id': council_id,
             'timestamp': datetime.datetime.now(),
             'table': self.table,
-            'content_hash': hashlib.sha1(data).hexdigest(),
+            'content_hash': sha1(data).hexdigest(),
         }
         if self.store_raw_data:
             hash_record['raw_data'] = data
