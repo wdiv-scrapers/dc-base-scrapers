@@ -10,6 +10,7 @@ setup(
         'lxml==3.6.4',
         'retry==0.9.2',
         'scraperwiki==0.5.1',
-        'arcgis2geojson'
+        'arcgis2geojson',
+        'commitment',
     ],
 )
