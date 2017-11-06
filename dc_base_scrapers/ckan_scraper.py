@@ -25,14 +25,18 @@ class CkanScraper:
         self.extra_fields = extra_fields
         self.encoding = encoding
 
+    def get_data(self):
+        data_str = get_data_from_url(self.url)
+        data = json.loads(data_str.decode(self.encoding))
+        return (data_str, data)
+
     def scrape(self):
 
         self.url = "%s%s" % (self.base_url, self.dataset)
         return_url = None
 
         # load json
-        data_str = get_data_from_url(self.url)
-        data = json.loads(data_str.decode(self.encoding))
+        data_str, data = self.get_data()
         print(
             "found %i %s resources" %
             (len(data['result']['resources']), self.dataset)
