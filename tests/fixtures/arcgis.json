@@ -1,0 +1,72 @@
+{
+ "displayFieldName": "UPRN",
+ "fieldAliases": {
+  "OBJECTID": "OBJECTID",
+  "NUM": "NUM",
+  "TEXT": "TEXT"
+ },
+ "geometryType": "esriGeometryPoint",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID"
+  },
+  {
+   "name": "NUM",
+   "type": "esriFieldTypeDouble",
+   "alias": "NUM"
+  },
+  {
+   "name": "TEXT",
+   "type": "esriFieldTypeString",
+   "alias": "TEXT",
+   "length": 240
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "OBJECTID": 1,
+    "NUM": 12,
+    "TEXT": "foo"
+   },
+   "geometry": {
+    "x": 1.4047961603792665,
+    "y": 51.350812966021017
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 2,
+    "NUM": 634612,
+    "TEXT": "bar"
+   },
+   "geometry": {
+    "x": 1.3663294190437523,
+    "y": 51.329333783998386
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 3,
+    "NUM": 60.71,
+    "TEXT": "baz"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [41.8359375, 71.015625],
+      [56.953125, 33.75],
+      [21.796875, 36.5625],
+      [41.8359375, 71.015625]
+     ]
+    ]
+   }
+  }
+ ]
+}
