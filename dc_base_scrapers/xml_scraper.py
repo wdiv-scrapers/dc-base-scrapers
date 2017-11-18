@@ -31,13 +31,16 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
     def feature_tag(self):
         pass
 
+    def get_data(self):
+        return get_data_from_url(self.url)
+
     def scrape(self):
 
         if not isinstance(self.pk, list):
             self.pk = [self.pk]
 
         # load xml
-        data_str = get_data_from_url(self.url)
+        data_str = self.get_data()
         tree = etree.fromstring(data_str)
         features = tree.findall(self.feature_tag)
         print("found %i %s" % (len(features), self.table))
@@ -71,7 +74,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
         self.store_history(data_str, self.council_id)
 
     def dump_fields(self):
-        data_str = get_data_from_url(self.url)
+        data_str = self.get_data()
         tree = etree.fromstring(data_str)
         features = tree.findall(self.feature_tag)
         for attribute in features[0][0]:
