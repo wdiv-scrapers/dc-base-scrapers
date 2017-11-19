@@ -73,7 +73,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
 
         self.store_history(data_str, self.council_id)
 
-    def dump_fields(self):
+    def dump_fields(self):  # pragma: no cover
         data_str = self.get_data()
         tree = etree.fromstring(data_str)
         features = tree.findall(self.feature_tag)
