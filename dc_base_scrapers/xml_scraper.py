@@ -31,7 +31,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
     def feature_tag(self):
         pass
 
-    def get_data(self):
+    def get_data(self):  # pragma: no cover
         return get_data_from_url(self.url)
 
     def scrape(self):

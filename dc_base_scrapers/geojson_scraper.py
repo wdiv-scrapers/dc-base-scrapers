@@ -26,7 +26,7 @@ class GeoJsonScraper(BaseScraper):
     def make_geometry(self, feature):
         return json.dumps(feature, sort_keys=True)
 
-    def get_data(self):
+    def get_data(self):  # pragma: no cover
         data_str = get_data_from_url(self.url)
         data = json.loads(data_str.decode(self.encoding))
         return (data_str, data)

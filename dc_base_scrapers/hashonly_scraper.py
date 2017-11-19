@@ -14,7 +14,7 @@ class HashOnlyScraper(BaseScraper):
         self.extension = extension
         super().__init__()
 
-    def get_data(self):
+    def get_data(self):  # pragma: no cover
         return get_data_from_url(self.url)
 
     def make_geometry(self, feature):
