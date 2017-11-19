@@ -76,7 +76,7 @@ def sync_db_to_github(council_id, table_name, key):
 
 
 @retry(HTTPError, tries=2, delay=30)
-def get_data_from_url(url):
+def get_data_from_url(url):  # pragma: no cover
     with urllib.request.urlopen(url, timeout=300) as response:
         data = response.read()
         return data
