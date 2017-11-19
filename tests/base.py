@@ -10,6 +10,22 @@ def disable_stdout():
 def enable_stdout():
     sys.stdout = sys.__stdout__
 
+def unset_env_vars():
+    # ensure env vars are definitely not set
+    if 'MORPH_GITHUB_REPO' in os.environ:
+        del(os.environ['MORPH_GITHUB_REPO'])
+    if 'MORPH_GITHUB_USERNAME' in os.environ:
+        del(os.environ['MORPH_GITHUB_USERNAME'])
+    if 'MORPH_GITHUB_EMAIL' in os.environ:
+        del(os.environ['MORPH_GITHUB_EMAIL'])
+    if 'MORPH_GITHUB_API_KEY' in os.environ:
+        del(os.environ['MORPH_GITHUB_API_KEY'])
+
+def drop_tables():
+    scraperwiki.sqlite.execute("DROP TABLE IF EXISTS foo;")
+    scraperwiki.sqlite.execute("DROP TABLE IF EXISTS history;")
+    scraperwiki.sqlite.commit_transactions()
+
 
 class ScraperTestCase(metaclass=abc.ABCMeta):
 
@@ -18,24 +34,11 @@ class ScraperTestCase(metaclass=abc.ABCMeta):
         pass
 
     def setUp(self):
-
-        # ensure env vars are definitely not set
-        if 'MORPH_GITHUB_REPO' in os.environ:
-            del(os.environ['MORPH_GITHUB_REPO'])
-        if 'MORPH_GITHUB_USERNAME' in os.environ:
-            del(os.environ['MORPH_GITHUB_USERNAME'])
-        if 'MORPH_GITHUB_EMAIL' in os.environ:
-            del(os.environ['MORPH_GITHUB_EMAIL'])
-        if 'MORPH_GITHUB_API_KEY' in os.environ:
-            del(os.environ['MORPH_GITHUB_API_KEY'])
-
+        unset_env_vars()
         self.run_scraper()
 
     def tearDown(self):
-        scraperwiki.sqlite.execute("DROP TABLE IF EXISTS foo;")
-        scraperwiki.sqlite.execute("DROP TABLE IF EXISTS history;")
-        scraperwiki.sqlite.commit_transactions()
-
+        drop_tables()
 
     def test_columns(self):
         result = scraperwiki.sqlite.execute("PRAGMA table_info(foo);")
