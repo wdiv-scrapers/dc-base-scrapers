@@ -14,11 +14,14 @@ class HashOnlyScraper(BaseScraper):
         self.extension = extension
         super().__init__()
 
+    def get_data(self):
+        return get_data_from_url(self.url)
+
     def make_geometry(self, feature):
         return json.dumps(feature)
 
     def scrape(self):
-        data = get_data_from_url(self.url)
+        data = self.get_data()
 
         if self.extension:
             sync_file_to_github(
