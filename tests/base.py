@@ -24,6 +24,7 @@ def unset_env_vars():
 def drop_tables():
     scraperwiki.sqlite.execute("DROP TABLE IF EXISTS foo;")
     scraperwiki.sqlite.execute("DROP TABLE IF EXISTS history;")
+    scraperwiki.sqlite.execute("DROP TABLE IF EXISTS resources;")
     scraperwiki.sqlite.commit_transactions()
 
 

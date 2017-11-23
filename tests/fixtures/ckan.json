@@ -1,0 +1,23 @@
+{
+    "foo": "bar",
+    "result": {
+        "foo": "bar",
+        "resources": [
+            {
+                "created": "2015-06-04T14:37:13.486978",
+                "description": "stuff",
+                "format": "geojson",
+                "revision_id": "430c4ae8-a7d7-49df-b18d-c5c7e7e805c8",
+                "url": "https://foo.bar/baz.geojson"
+            },
+            {
+                "created": "2015-06-04T14:37:51.841517",
+                "description": "things",
+                "format": "csv",
+                "revision_id": "8f5e3314-2822-41b0-a593-4b5fe72b860e",
+                "url": "https://foo.bar/baz.csv"
+            }
+        ]
+    },
+    "success": true
+}
