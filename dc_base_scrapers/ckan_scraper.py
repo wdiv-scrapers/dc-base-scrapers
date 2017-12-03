@@ -25,7 +25,7 @@ class CkanScraper:
         self.extra_fields = extra_fields
         self.encoding = encoding
 
-    def get_data(self):
+    def get_data(self):  # pragma: no cover
         data_str = get_data_from_url(self.url)
         data = json.loads(data_str.decode(self.encoding))
         return (data_str, data)
