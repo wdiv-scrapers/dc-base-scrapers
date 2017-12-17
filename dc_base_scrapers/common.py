@@ -32,7 +32,7 @@ def save(unique_keys, data, table_name):
 
 def get_github_credentials():
     return GitHubCredentials(
-        repo=os.environ['MORPH_GITHUB_REPO'],
+        repo=os.environ['MORPH_GITHUB_POLLING_REPO'],
         branch='master',
         name=os.environ['MORPH_GITHUB_USERNAME'],
         email=os.environ['MORPH_GITHUB_EMAIL'],
