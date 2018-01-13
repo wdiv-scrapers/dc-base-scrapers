@@ -1,0 +1,17 @@
+{
+    "foo": "bar",
+    "resources": {
+        "56a4ffc3-c6fa-48d2-8ad8-3b912fa7dd4a": {
+            "url": "https://foo.bar/baz.geojson",
+            "description": "stuff",
+            "format": "geojson",
+            "versions": []
+        },
+        "6ccefc8e-a2ce-4bd6-8a2c-65436dfbc87d": {
+            "url": "https://foo.bar/baz.csv",
+            "description": "things",
+            "format": "csv",
+            "versions": []
+        }
+    }
+}
