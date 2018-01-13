@@ -58,7 +58,7 @@ class CkanScraper:
             # save to db
             save(['dataset', 'revision_id', 'format'], record, 'resources')
 
-            if resource['format'] == self.return_format:
+            if resource['format'].lower() == self.return_format.lower():
                 return_url = resource['url']
 
         sync_file_to_github(
