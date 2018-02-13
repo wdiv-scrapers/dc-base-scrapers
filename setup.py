@@ -11,6 +11,6 @@ setup(
         'retry==0.9.2',
         'scraperwiki==0.5.1',
         'arcgis2geojson',
-        'commitment',
+        'commitment==1.0.0',
     ],
 )
