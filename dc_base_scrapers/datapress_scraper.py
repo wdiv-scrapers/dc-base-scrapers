@@ -1,17 +1,11 @@
 import json
 from collections import OrderedDict
 from dc_base_scrapers.common import (
+    format_json,
     get_data_from_url,
     save,
     sync_file_to_github
 )
-
-
-def format_json(json_str):
-    return json.dumps(
-        json.loads(json_str, object_pairs_hook=OrderedDict),
-        sort_keys=True, indent=4
-    )
 
 
 class DataPressScraper:

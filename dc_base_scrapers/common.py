@@ -51,6 +51,13 @@ def dump_table_to_json(table_name, key):
         sort_keys=True, indent=4)
 
 
+def format_json(json_str):
+    return json.dumps(
+        json.loads(json_str, object_pairs_hook=OrderedDict),
+        sort_keys=True, indent=4
+    )
+
+
 def sync_file_to_github(council_id, file_name, content):
     try:
         creds = get_github_credentials()
