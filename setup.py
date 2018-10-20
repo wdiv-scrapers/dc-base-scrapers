@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'arcgis2geojson==1.3.0',
         'commitment==2.0.0',
+        'geojson-rewind==0.1.0',
         'lxml==3.6.4',
         'retry==0.9.2',
         'scraperwiki==0.5.1',

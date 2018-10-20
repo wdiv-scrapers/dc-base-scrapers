@@ -1,4 +1,5 @@
 import datetime
+from geojson_rewind import rewind
 import hashlib
 import json
 from collections import OrderedDict
@@ -28,8 +29,9 @@ class GeoJsonScraper(BaseScraper):
 
     def get_data(self):  # pragma: no cover
         data_str = get_data_from_url(self.url)
-        data = json.loads(data_str.decode(self.encoding))
-        return (data_str, data)
+        data_str = rewind(data_str.decode(self.encoding))
+        data = json.loads(data_str)
+        return (data_str.encode(self.encoding), data)
 
     def scrape(self):
 
@@ -85,10 +87,9 @@ class RandomIdGeoJSONScraper(GeoJsonScraper):
         """
 
         data_str = get_data_from_url(self.url)
+        data_str = rewind(data_str.decode(self.encoding))
 
-        data = json.loads(
-            data_str.decode(self.encoding),
-            object_pairs_hook=OrderedDict)
+        data = json.loads(data_str, object_pairs_hook=OrderedDict)
 
         for i in range(0, len(data['features'])):
             data['features'][i]['id'] = i
