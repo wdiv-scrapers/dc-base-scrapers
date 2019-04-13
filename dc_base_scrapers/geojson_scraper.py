@@ -57,7 +57,7 @@ class GeoJsonScraper(BaseScraper):
 
             for field in feature['properties']:
                 value = feature['properties'][field]
-                if isinstance(value, Number) or isinstance(value, str):
+                if value is None or isinstance(value, Number) or isinstance(value, str):
                     if isinstance(value, str):
                         record[field] = value.strip()
                     else:
