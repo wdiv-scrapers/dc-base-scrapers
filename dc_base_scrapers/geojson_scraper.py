@@ -2,6 +2,7 @@ import datetime
 from geojson_rewind import rewind
 import hashlib
 import json
+from numbers import Number
 from collections import OrderedDict
 from dc_base_scrapers.common import (
     BaseScraper,
@@ -55,8 +56,8 @@ class GeoJsonScraper(BaseScraper):
                 record['pk'] = feature['properties'][self.key]
 
             for field in feature['properties']:
-                if field != 'bbox':
-                    value = feature['properties'][field]
+                value = feature['properties'][field]
+                if isinstance(value, Number) or isinstance(value, str):
                     if isinstance(value, str):
                         record[field] = value.strip()
                     else:
