@@ -34,6 +34,21 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
     def get_data(self):  # pragma: no cover
         return get_data_from_url(self.url)
 
+    def process_feature(self, feature, tree):
+        record = {
+            'council_id': self.council_id,
+            'geometry': self.make_geometry(tree, feature),
+        }
+
+        # extract attributes and assemble record
+        for attribute in feature[0]:
+            if attribute.tag in self.fields:
+                if isinstance(attribute.text, str):
+                    record[self.fields[attribute.tag]] = attribute.text.strip()
+                else:
+                    record[self.fields[attribute.tag]] = attribute.text
+        return record
+
     def scrape(self):
 
         if not isinstance(self.pk, list):
@@ -49,19 +64,7 @@ class XmlScraper(BaseScraper, metaclass=abc.ABCMeta):
         truncate(self.table)
 
         for feature in features:
-
-            record = {
-                'council_id': self.council_id,
-                'geometry': self.make_geometry(tree, feature),
-            }
-
-            # extract attributes and assemble record
-            for attribute in feature[0]:
-                if attribute.tag in self.fields:
-                    if isinstance(attribute.text, str):
-                        record[self.fields[attribute.tag]] = attribute.text.strip()
-                    else:
-                        record[self.fields[attribute.tag]] = attribute.text
+            record = self.process_feature(feature, tree)
 
             # save to db
             save(self.pk, record, self.table)
