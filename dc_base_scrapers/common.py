@@ -51,11 +51,12 @@ def dump_table_to_json(table_name, key):
         sort_keys=True, indent=4)
 
 
-def format_json(json_str):
-    return json.dumps(
-        json.loads(json_str, object_pairs_hook=OrderedDict),
-        sort_keys=True, indent=4
-    )
+def format_json(json_str, exclude_keys=None):
+    data = json.loads(json_str, object_pairs_hook=OrderedDict)
+    if isinstance(data, dict) and exclude_keys:
+        for key in exclude_keys:
+            data.pop(key, None)
+    return json.dumps(data, sort_keys=True, indent=4 )
 
 
 def sync_file_to_github(council_id, file_name, content):
