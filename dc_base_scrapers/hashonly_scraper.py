@@ -1,3 +1,5 @@
+import json
+
 from dc_base_scrapers.common import (
     BaseScraper,
     format_json,
@@ -21,7 +23,7 @@ class HashOnlyScraper(BaseScraper):
     def make_geometry(self, feature):  # pragma: no cover
         return json.dumps(feature)
 
-    def scrape(self):
+    def scrape(self, exclude_keys=[]):
         data = self.get_data()
 
         if self.extension:
@@ -31,7 +33,7 @@ class HashOnlyScraper(BaseScraper):
                 sync_file_to_github(
                     self.council_id,
                     filename,
-                    format_json(data.decode('utf-8'))
+                    format_json(data.decode('utf-8'), exclude_keys=exclude_keys)
                 )
             else:
                 sync_file_to_github(self.council_id, filename, data)
